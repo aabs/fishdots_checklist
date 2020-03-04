@@ -98,7 +98,6 @@ function checklist_instantiate -a name -d "creates and instance of the checklist
   set -l ts (date +"%Y%m%d%H%M")
   set -l target_path "$FD_CHECKLIST_INSTANCES_HOME/$ts-$checklist_bn"
   # copy file with date stamp
-  echo "copy $name into $target_path"
   cp "$name" "$target_path"
   # edit instance file
   vim "$target_path"
