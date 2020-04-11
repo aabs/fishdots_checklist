@@ -11,7 +11,9 @@ define_subcommand_nonevented chkl find chkl_find "find an active checklist"
 define_subcommand_nonevented chkl home chkl_home "change to the checklist definitions folder"
 define_subcommand_nonevented chkl ls chkl_ls "list active checklists"
 define_subcommand_nonevented chkl lsar chkl_lsar "list inactive checklists"
+define_subcommand_nonevented chkl lsdef chkl_lsdef "list checklist definitions"
 define_subcommand_nonevented chkl open chkl_open "open for an active checklist for editing"
+define_subcommand_nonevented chkl openar chkl_openar "open a archived checklist for editing"
 define_subcommand_nonevented chkl opendef chkl_opendef "open a checklist definition for editing"
 define_subcommand_nonevented chkl start chkl_start "select and start checklist and open in editor"
 define_subcommand_nonevented chkl tasks chkl_nierr "list next task from active checklists"
@@ -30,6 +32,10 @@ end
 
 function chkl_lsar
     fishdots_find $FD_CHECKLIST_ARCHIVE_HOME "*.md"
+end
+
+function chkl_lsdef
+    fishdots_find $FD_CHECKLIST_DEFINITIONS_HOME "*.md"
 end
 
 function chkl_find -a name_pattern
@@ -52,6 +58,17 @@ function chkl_start -a search_pattern -d "find checklist definition matching <pa
     fd_file_selector $FD_CHECKLIST_DEFINITIONS_HOME "*.md"
     if set -q fd_selected_item
         chkl_spawn $fd_selected_item
+    end
+end
+
+function chkl_openar -a search_pattern -d "open a archived checklist for editing"
+    fd_file_selector $FD_CHECKLIST_ARCHIVE_HOME "*.md"
+    if set -q fd_selected_item
+        if set -q EDITOR
+            eval '$EDITOR "'$fd_selected_item'"'
+        else
+            nvim $fd_selected_item
+        end
     end
 end
 
@@ -108,15 +125,15 @@ function chkl_spawn -a definition_path -d "creates an instance of the checklist"
 end
 
 function _chkl_select_inst -a inst_path -d "choose working checklist instance"
-  if test -e $inst_path
-    set -U FD_CHECKLIST_CURRENT_CHECKLIST $inst_path
-  end
+    if test -e $inst_path
+        set -U FD_CHECKLIST_CURRENT_CHECKLIST $inst_path
+    end
 end
 
 function _chkl_select_def -a def_path -d "choose working definition"
-  if test -e $inst_path
-    set -U FD_CHECKLIST_CURRENT_DEFINITION $inst_path
-  end
+    if test -e $inst_path
+        set -U FD_CHECKLIST_CURRENT_DEFINITION $inst_path
+    end
 end
 
 function _chkl_archive -a inst_path -d "archive selected file"
@@ -132,7 +149,7 @@ function chkl_archive -d "select an active checklist for archival"
 end
 
 function chkl_archiveall -d "archive all active checklists"
-  for inst in (fishdots_find $FD_CHECKLIST_INSTANCES_HOME "*.md")
-    _chkl_archive $inst
-  end
+    for inst in (fishdots_find $FD_CHECKLIST_INSTANCES_HOME "*.md")
+        _chkl_archive $inst
+    end
 end
