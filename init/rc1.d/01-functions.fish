@@ -67,7 +67,7 @@ function chkl_openar -a search_pattern -d "open a archived checklist for editing
         if set -q EDITOR
             eval '$EDITOR "'$fd_selected_item'"'
         else
-            nvim $fd_selected_item
+            vim $fd_selected_item
         end
     end
 end
