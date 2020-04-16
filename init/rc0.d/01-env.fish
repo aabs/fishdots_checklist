@@ -1,19 +1,19 @@
 #!/usr/bin/env fish
 
-if not set -q FD_CHECKLISTS_HOME
-  set -U FD_CHECKLISTS_HOME $HOME/.config/checklists
+if not set -q FD_CHECKLIST_HOME
+  set -U FD_CHECKLIST_HOME $HOME/.config/checklists
 end
 
 if not set -q FD_CHECKLIST_DEFINITIONS_HOME
-  set -U FD_CHECKLIST_DEFINITIONS_HOME $FD_CHECKLISTS_HOME/checklist-definitions
+  set -U FD_CHECKLIST_DEFINITIONS_HOME $FD_CHECKLIST_HOME/checklist-definitions
 end
 
 if not set -q FD_CHECKLIST_INSTANCES_HOME
-  set -U FD_CHECKLIST_INSTANCES_HOME $FD_CHECKLISTS_HOME/active-checklists
+  set -U FD_CHECKLIST_INSTANCES_HOME $FD_CHECKLIST_HOME/active-checklists
 end
 
 if not set -q FD_CHECKLIST_ARCHIVE_HOME
-  set -U FD_CHECKLIST_ARCHIVE_HOME $FD_CHECKLISTS_HOME/inactive-checklists
+  set -U FD_CHECKLIST_ARCHIVE_HOME $FD_CHECKLIST_HOME/inactive-checklists
 end
 
 if not set -q FD_CHECKLIST_CURRENT_CHECKLIST
