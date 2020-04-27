@@ -17,6 +17,7 @@ define_subcommand_nonevented chkl openar chkl_openar "open a archived checklist 
 define_subcommand_nonevented chkl opendef chkl_opendef "open a checklist definition for editing"
 define_subcommand_nonevented chkl start chkl_start "select and start checklist and open in editor"
 define_subcommand_nonevented chkl tasks chkl_nierr "list next task from active checklists"
+define_subcommand_nonevented chkl sync chkl_sync "save changes and push to origin repo"
 
 function chkl_nierr
     echo "Sorry, that command has not been implemented yet"
@@ -47,7 +48,10 @@ function chkl_search -a pattern
 end
 
 function chkl_open -a search_pattern -d "find active checklist matching <pattern>, and edit"
-    fd_file_selector $FD_CHECKLIST_INSTANCES_HOME "*.md"
+    if "$search_pattern" = ""
+        set search_pattern "*.md"
+    end
+    fd_file_selector $FD_CHECKLIST_INSTANCES_HOME "$search_pattern"
     if set -q fd_selected_item
         _chkl_select_inst $fd_selected_item
         chkl_edit
@@ -55,7 +59,7 @@ function chkl_open -a search_pattern -d "find active checklist matching <pattern
 end
 
 function chkl_start -a search_pattern -d "find checklist definition matching <pattern>, spawn a new instance and edit"
-    fd_file_selector $FD_CHECKLIST_DEFINITIONS_HOME "*.md"
+    fd_file_selector $FD_CHECKLIST_DEFINITIONS_HOME "$search_pattern"
     if set -q fd_selected_item
         chkl_spawn $fd_selected_item
     end
@@ -80,20 +84,22 @@ function chkl_opendef -a search_pattern -d "file name search for a definition ma
     end
 end
 
-function chkl_edit -d "edit the current checklist instance"
+function _chkl_edit -a filepath -d "open the file in the editor"
     if set -q EDITOR
-        eval '$EDITOR "'$FD_CHECKLIST_CURRENT_CHECKLIST'"'
-    else
-        nvim $FD_CHECKLIST_CURRENT_CHECKLIST
+      eval "$EDITOR $filepath"
     end
 end
 
-function chkl_editdef -a file_path -d "edit the current definition"
-    if set -q EDITOR
-        eval '$EDITOR "'$FD_CHECKLIST_CURRENT_DEFINITION'"'
-    else
-        nvim $FD_CHECKLIST_CURRENT_DEFINITION
+function chkl_edit -d "edit the current checklist instance"
+    _chkl_edit	$FD_CHECKLIST_CURRENT_CHECKLIST
+end
+
+function chkl_editdef -d "edit the current definition"
+    if not set -q FD_CHECKLIST_CURRENT_DEFINITION
+	echo Current definition not set
+	return
     end
+    _chkl_edit	$FD_CHECKLIST_CURRENT_DEFINITION
 end
 
 function chkl_define -a name -d "creates a new definition of a checklist"
@@ -131,8 +137,8 @@ function _chkl_select_inst -a inst_path -d "choose working checklist instance"
 end
 
 function _chkl_select_def -a def_path -d "choose working definition"
-    if test -e $inst_path
-        set -U FD_CHECKLIST_CURRENT_DEFINITION $inst_path
+    if test -e $def_path
+        set -U FD_CHECKLIST_CURRENT_DEFINITION $def_path
     end
 end
 
@@ -152,4 +158,9 @@ function chkl_archiveall -d "archive all active checklists"
     for inst in (fishdots_find $FD_CHECKLIST_INSTANCES_HOME "*.md")
         _chkl_archive $inst
     end
+end
+
+function chkl_sync -a msg -d "save and push"
+  cd $FD_CHECKLIST_HOME
+  fdg sync "$msg"
 end
