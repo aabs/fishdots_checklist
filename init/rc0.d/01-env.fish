@@ -26,7 +26,9 @@ if not set -q FD_CHECKLIST_CURRENT_DEFINITION
   echo -e "# welcome to fishdots checklists\n- [ ] put your checklist items here\n" > $FD_CHECKLIST_CURRENT_DEFINITION
 end
 
-function checklist_greeting --on-event on_fish_greeting
-  set -l num_active_lists (find $FD_CHECKLIST_INSTANCES_HOME -iname "*.md" | wc -l)
-  echo There are $num_active_lists active checklists currently
-end
+# function checklist_greeting --on-event on_fish_greeting_ignore
+#     if status is-interactive
+#       set -l num_active_lists (find $FD_CHECKLIST_INSTANCES_HOME -iname "*.md" | wc -l)
+#       echo There are $num_active_lists active checklists currently
+#     end
+# end
